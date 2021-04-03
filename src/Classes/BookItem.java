@@ -12,13 +12,22 @@ public class BookItem extends Book{
     private Date dueDate;
     private BookStatus bookStatus;
 
-    public BookItem(String title, String subject, String language, int numberOfPages, Publisher publisher, List<Author> authors, Date dateOfPurchase, double price, Date borrowed, Date dueDate, BookStatus bookStatus) {
-        super(title, subject, language, numberOfPages, publisher, authors);
+    public BookItem(String title, String subject, String language, int numberOfPages, PublishingHouse publishingHouse, List<Author> authors, Category category,Date dateOfPurchase, double price, Date borrowed, Date dueDate, BookStatus bookStatus) {
+        super(title, subject, language, numberOfPages, publishingHouse, authors, category);
         this.dateOfPurchase = dateOfPurchase;
         this.price = price;
         this.borrowed = borrowed;
         this.dueDate = dueDate;
         this.bookStatus = bookStatus;
+    }
+
+    public BookItem(){
+        super();
+        this.dateOfPurchase = new Date();
+        this.price = 0.0;
+        this.borrowed = new Date();
+        this.dueDate = new Date();
+        this.bookStatus = BookStatus.AVAILABLE;
     }
 
     public Date getDateOfPurchase() {

@@ -4,10 +4,18 @@ import java.util.Date;
 
 public class Librarian extends Person{
     private Date hiringDate;
+    private Library library;
 
-    public Librarian(String firstName, String lastName, Address address, String phoneNumber, Date hiringDate) {
+    public Librarian(String firstName, String lastName, Address address, String phoneNumber, Date hiringDate, Library library) {
         super(firstName, lastName, address, phoneNumber);
         this.hiringDate = hiringDate;
+        this.library = library;
+    }
+
+    public Librarian(){
+        super();
+        this.hiringDate = new Date();
+        this.library = new Library();
     }
 
     public Date getHiringDate() {
@@ -25,5 +33,11 @@ public class Librarian extends Person{
                 '}';
     }
 
+    public Library getLibrary() {
+        return library;
+    }
 
+    public void setLibrary(Library library) {
+        this.library = library;
+    }
 }

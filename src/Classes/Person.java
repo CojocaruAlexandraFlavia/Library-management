@@ -13,6 +13,13 @@ public abstract class Person {
         this.phoneNumber = phoneNumber;
     }
 
+    public Person() {
+        this.firstName = "";
+        this.lastName = "";
+        this.address = new Address();
+        this.phoneNumber = "";
+    }
+
     public String getFirstName() {
         return firstName;
     }

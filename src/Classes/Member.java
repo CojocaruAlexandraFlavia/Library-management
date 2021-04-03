@@ -14,6 +14,12 @@ public class Member extends Person {
         this.status = status;
     }
 
+    public Member(){
+        super();
+        this.membershipDate = new Date();
+        this.status = MemberStatus.ACTIVE;
+    }
+
     public Date getMembershipDate() {
         return membershipDate;
     }

@@ -13,6 +13,13 @@ public class Address {
         this.zipcode = zipcode;
     }
 
+    public Address(){
+        this.street = "";
+        this.city = "";
+        this.country = "";
+        this.zipcode = "";
+    }
+
     public String getStreet() {
         return street;
     }

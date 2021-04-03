@@ -1,5 +1,6 @@
 package Classes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Category {
@@ -9,6 +10,11 @@ public class Category {
     public Category(String name, List<Book> books) {
         this.name = name;
         this.books = books;
+    }
+
+    public Category(){
+        this.name = "";
+        this.books = new ArrayList<Book>();
     }
 
     public String getName() {

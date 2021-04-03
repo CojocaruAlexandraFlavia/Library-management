@@ -1,5 +1,6 @@
 package Classes;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,6 +15,13 @@ public class Author {
         this.lastName = lastName;
         this.birthDate = birthDate;
         this.books = books;
+    }
+
+    public Author(){
+        this.firstName = "";
+        this.lastName = "";
+        this.birthDate = new Date();
+        this.books = new ArrayList<Book>();
     }
 
     public String getFirstName() {
