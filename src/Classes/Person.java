@@ -3,20 +3,20 @@ package Classes;
 public abstract class Person {
     private String firstName;
     private String lastName;
-    private Address address;
+    //private Address address;
     private String phoneNumber;
 
-    public Person(String firstName, String lastName, Address address, String phoneNumber) {
+    public Person(String firstName, String lastName, String phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.address = address;
+        //this.address = address;
         this.phoneNumber = phoneNumber;
     }
 
     public Person() {
         this.firstName = "";
         this.lastName = "";
-        this.address = new Address();
+        //this.address = new Address();
         this.phoneNumber = "";
     }
 
@@ -36,13 +36,15 @@ public abstract class Person {
         this.lastName = lastName;
     }
 
+    /*
     public Address getAddress() {
         return address;
     }
-
-    public void setAddress(Address address) {
+public void setAddress(Address address) {
         this.address = address;
     }
+    * */
+
 
     public String getPhoneNumber() {
         return phoneNumber;
@@ -57,7 +59,7 @@ public abstract class Person {
         return "Person{" +
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", address=" + address +
+                //", address=" + address +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 '}';
     }

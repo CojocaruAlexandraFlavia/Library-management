@@ -4,20 +4,20 @@ public class Address {
     private String street;
     private String city;
     private String country;
-    private String zipcode;
+    private String zipCode;
 
-    public Address(String street, String city, String country, String zipcode) {
+    public Address(String street, String city, String country, String zipCode) {
         this.street = street;
         this.city = city;
         this.country = country;
-        this.zipcode = zipcode;
+        this.zipCode = zipCode;
     }
 
     public Address(){
         this.street = "";
         this.city = "";
         this.country = "";
-        this.zipcode = "";
+        this.zipCode = "";
     }
 
     public String getStreet() {
@@ -44,12 +44,12 @@ public class Address {
         this.country = country;
     }
 
-    public String getZipcode() {
-        return zipcode;
+    public String getZipCode() {
+        return zipCode;
     }
 
-    public void setZipcode(String zipcode) {
-        this.zipcode = zipcode;
+    public void setZipCode(String zipcode) {
+        this.zipCode = zipcode;
     }
 
     @Override
@@ -58,7 +58,7 @@ public class Address {
                 "street='" + street + '\'' +
                 ", city='" + city + '\'' +
                 ", country='" + country + '\'' +
-                ", zipcode='" + zipcode + '\'' +
+                ", zipCode='" + zipCode + '\'' +
                 '}';
     }
 }

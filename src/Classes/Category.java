@@ -5,16 +5,15 @@ import java.util.List;
 
 public class Category {
     private String name;
-    private List<Book> books;
 
-    public Category(String name, List<Book> books) {
+    public Category(String name) {
         this.name = name;
-        this.books = books;
+        //this.books = books;
     }
 
     public Category(){
         this.name = "";
-        this.books = new ArrayList<Book>();
+        //this.books = new ArrayList<Book>();
     }
 
     public String getName() {
@@ -25,11 +24,11 @@ public class Category {
         this.name = name;
     }
 
-    public List<Book> getBooks() {
-        return books;
-    }
+    //public List<Book> getBooks() {
+    //    return books;
+    //}
 
-    public void setBooks(List<Book> books) {
-        this.books = books;
-    }
+    //public void setBooks(List<Book> books) {
+    //    this.books = books;
+    //}
 }

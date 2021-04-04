@@ -1,25 +1,28 @@
 package Service;
 
 import Classes.*;
+import Enums.BookStatus;
+import Enums.MemberStatus;
 import Interfaces.Search;
 
 import java.util.*;
 
 public class MainService implements Search {
-    Set<Book> books;
-    Set<Author> authors;
-    Set<Library> libraries;
-    Set<Member> members;
-    Set<Librarian> librarians;
-    Set<PublishingHouse> publishingHouses;
-    Set<Category> categories;
-    Set<Address> addresses;
-    Set<BookItem> bookItems;
+    TreeSet<Book> books = new TreeSet<>();
+    Set<Author> authors = new HashSet<>();
+    Set<Library> libraries = new HashSet<>();
+    Set<Member> members = new HashSet<>();
+    Set<Librarian> librarians = new HashSet<>();
+    Set<PublishingHouse> publishingHouses = new HashSet<>();
+    Set<Category> categories = new HashSet<>();
+    Set<Address> addresses = new HashSet<>();
+    Set<BookItem> bookItems = new HashSet<>();
+    double totalSales = 0.0;
 
 
     public void addAddress(Address address){
         addresses.add(address);
-        System.out.println("The address " + address.getStreet() + ", " + address.getCity() + ", " + address.getCountry() + ", " + address.getZipcode() + " was added.\n");
+        System.out.println("The address " + address.getStreet() + ", " + address.getCity() + ", " + address.getCountry() + ", " + address.getZipCode() + " was added.\n");
     }
 
     public void addBook(Book book){
@@ -68,11 +71,13 @@ public class MainService implements Search {
         return (new Book("", "", "", 0, new PublishingHouse(), new ArrayList<>(), new Category()));
     }
 
-    public List<Book> searchBookByAuthor(String firstName, String lastName){
-        List<Book> booksFound = new ArrayList<>();
-        for(Author author : authors) {
-            if(author.getLastName().equals(lastName) && author.getFirstName().equals(firstName)){
-                return author.getBooks();
+    public Set<Book> searchBookByAuthor(String firstName, String lastName){
+        Set<Book> booksFound = new HashSet<>();
+        for(Book book : books) {
+            for(Author author : book.getAuthors()){
+                if(author.getFirstName().equals(firstName) && author.getLastName().equals(lastName)){
+                    booksFound.add(book);
+                }
             }
         }
         return booksFound;
@@ -93,6 +98,76 @@ public class MainService implements Search {
             System.out.println(book.getTitle());
         }
     }
+
+    public void closeMemberAccount(int id){
+        boolean memberFound = false;
+        for(Member member : members){
+            if (member.getId() == id){
+                member.setStatus(MemberStatus.CLOSED);
+                memberFound = true;
+            }
+        }
+        if(!memberFound){
+            System.out.println("Write the correct member id and try again.\n");
+        }
+    }
+
+    public void buyBook(BookItem bookItem){
+        bookItem.setBookStatus(BookStatus.BOUGHT);
+        totalSales += bookItem.getPrice();
+        bookItem.setDateOfPurchase(new Date());
+    }
+
+    public void showTotalSales(){
+        System.out.println("Total sales: " + totalSales + "\n");
+    }
+
+    public void bookReservation(BookItem bookItem){
+        bookItem.setBookStatus(BookStatus.RESERVED);
+    }
+
+    public boolean verifyMember(int id){
+        for(Member member : members){
+            if(member.getId() == id){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void bookLending(BookItem bookItem){
+        bookItem.setBookStatus(BookStatus.BORROWED);
+    }
+
+    public PublishingHouse publishingHouseSearch(String name){
+        for(PublishingHouse publishingHouse: publishingHouses){
+            if(publishingHouse.getName().equals(name)){
+                return publishingHouse;
+            }
+        }
+        return (new PublishingHouse());
+    }
+
+    public Category categorySearch(String name){
+        Category categoryNotFound = new Category();
+        for(Category category : categories){
+            if(category.getName().equals(name)){
+                return category;
+            }
+        }
+        return categoryNotFound;
+    }
+
+    public Author authorSearch(String firstName, String lastName){
+        Author authorNotFound = new Author();
+        for(Author author : authors){
+            if(author.getFirstName().equals(firstName) && author.getLastName().equals(lastName)){
+                return author;
+            }
+        }
+        return authorNotFound;
+    }
+
 
 
 

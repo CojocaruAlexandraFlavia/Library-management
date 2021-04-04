@@ -4,50 +4,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Author {
-    private String firstName;
-    private String lastName;
-    private Date birthDate;
+public class Author extends Person {
     private List<Book> books;
 
-    public Author(String firstName, String lastName, Date birthDate, List<Book> books) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.birthDate = birthDate;
-        this.books = books;
+    public Author(String firstName, String lastName, String phoneNumber){//, List<Book> books) {
+        super(firstName, lastName, phoneNumber);
+        //this.books = books;
     }
 
     public Author(){
-        this.firstName = "";
-        this.lastName = "";
-        this.birthDate = new Date();
-        this.books = new ArrayList<Book>();
+        super();
+        //this.books = new ArrayList<>();
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public Date getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(Date birthDate) {
-        this.birthDate = birthDate;
-    }
-
+/**
     public List<Book> getBooks() {
         return books;
     }
@@ -56,13 +27,14 @@ public class Author {
         this.books = books;
     }
 
-    @Override
-    public String toString() {
-        return "Author{" +
-                "firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", birthDate=" + birthDate +
-                ", books=" + books +
-                '}';
-    }
+     @Override
+     public String toString() {
+     return "Author{" +
+     "firstName='" + firstName + '\'' +
+     ", lastName='" + lastName + '\'' +
+     //", books=" + books +
+     '}';
+     }
+    **/
+
 }

@@ -7,6 +7,6 @@ import java.util.Set;
 
 public interface Search {
     Book searchBookByTitle(String title);
-    List<Book> searchBookByAuthor(String firstName, String lastName);
+    Set<Book> searchBookByAuthor(String firstName, String lastName);
     Set<Book> searchBookByCategory(String categoryName);
 }

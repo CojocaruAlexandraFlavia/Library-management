@@ -4,18 +4,21 @@ import Enums.MemberStatus;
 import java.util.Date;
 
 public class Member extends Person {
+    private int id;
     private Date membershipDate;
-    private int totalBooksCheckouts;
+    //private int totalBooksCheckouts;
     private MemberStatus status;
 
-    public Member(String firstName, String lastName, Address address, String phoneNumber, Date membershipDate, MemberStatus status) {
-        super(firstName, lastName, address, phoneNumber);
+    public Member(String firstName, String lastName, String phoneNumber, int id, Date membershipDate, MemberStatus status) {
+        super(firstName, lastName, phoneNumber);
+        this.id = id;
         this.membershipDate = membershipDate;
         this.status = status;
     }
 
     public Member(){
         super();
+        this.id = 0;
         this.membershipDate = new Date();
         this.status = MemberStatus.ACTIVE;
     }
@@ -28,6 +31,7 @@ public class Member extends Person {
         this.membershipDate = membershipDate;
     }
 
+    /*
     public int getTotalBooksCheckouts() {
         return totalBooksCheckouts;
     }
@@ -35,6 +39,8 @@ public class Member extends Person {
     public void setTotalBooksCheckouts(int totalBooksCheckouts) {
         this.totalBooksCheckouts = totalBooksCheckouts;
     }
+    * */
+
 
     public MemberStatus getStatus() {
         return status;
@@ -42,5 +48,13 @@ public class Member extends Person {
 
     public void setStatus(MemberStatus status) {
         this.status = status;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

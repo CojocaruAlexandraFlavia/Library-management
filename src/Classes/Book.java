@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-public class Book {
+public class Book implements Comparable<Book> {
     private String title;
     private String subject;
     private String language;
@@ -97,5 +97,11 @@ public class Book {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+
+    @Override
+    public int compareTo(Book o) {
+        return this.title.compareTo(o.getTitle());
     }
 }
