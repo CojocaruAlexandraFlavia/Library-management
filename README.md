@@ -9,16 +9,16 @@
 5) Adding an address;
 6) Create a member;
 7) Adding a librarian;
-8) Create new library (with its address, its librarians, its books etc.);
+8) Create new library (with its address, librarians, books etc.);
 9) Create a book reservation (the selected book will be RESERVED);
-10) Create a book borrowing (with the date when the book was borrowed and the due date);
+10) Create a book borrowing (with the the due date and the date when it was borrowed);
 11) Buy a book; 
 12) Search books by title, author, category;
 13) Search a category by its name;
 14) Search a publishing house by its name;
 15) Search an author by its first name and last name;
-16) Display all the book titles in ascending order;
-17) Closing a member account;
+16) Display all the book titles in ascending order (the TreeSet will store the books sorted by their title);
+17) Close a member account;
 18) Display total sales (the total value of the sold books);
 19) Verify if an ID corresponds to a member;
 
