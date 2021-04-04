@@ -1,5 +1,5 @@
 # Library management system
---------
+
 ### List of actions / interogations:
 
 1) Adding a book with its number of exemplaries (available book items);
