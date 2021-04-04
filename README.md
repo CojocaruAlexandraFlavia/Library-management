@@ -1,7 +1,6 @@
 # Library management system
-
-#
-**List of actions / interogations:**
+--------
+### List of actions / interogations:
 
 1) Adding a book with its number of exemplaries (available book items);
 2) Adding an author;
@@ -23,8 +22,8 @@
 18) Display total sales (the total value of the sold books);
 19) Verify if an ID corresponds to a member;
 
-#
-**List of objects:**
+---------
+### List of objects:
 
 1) Book
 2) Category
