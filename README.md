@@ -18,9 +18,10 @@
 14) Search a publishing house by its name;
 15) Search an author by its first name and last name;
 16) Display all the book titles in ascending order (the TreeSet will store the books sorted by their title);
-17) Close a member account;
-18) Display total sales (the total value of the sold books);
-19) Verify if an ID corresponds to a member;
+17) Display all the available copies;
+18) Close a member account;
+19) Display total sales (the total value of the sold books);
+20) Verify if an ID corresponds to a member;
 
 ---------
 ### List of objects:
