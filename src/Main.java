@@ -39,7 +39,7 @@ public class Main {
                     System.out.println("Write your member id.");
                     int id = Integer.parseInt(scanner.nextLine());
                     if (!mainService.verifyMember(id)) {
-                        System.out.println("You are not a member. You can create an account if you want by choosing number 6 next time.");
+                        System.out.println("You are not a member. You can create an account if you want by choosing number 5 next time.");
                     } else {
                         System.out.println("It's ok, you are a member.");
                     }

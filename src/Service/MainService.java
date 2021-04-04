@@ -21,8 +21,9 @@ public class MainService implements Search {
     Set<BookReservation> reservations = new HashSet<>();
     Set<BookBorrowing> borrowings = new HashSet<>();
     double totalSales = 0.0;
-    int itemIds = 0;
+    //int itemIds = 0;
     AtomicInteger memberIds = new AtomicInteger();
+    AtomicInteger itemIds = new AtomicInteger();
 
     public void addAddress(Address address){
         addresses.add(address);
@@ -31,9 +32,9 @@ public class MainService implements Search {
 
     public void addBook(Book book){
         books.add(book);
-        for(int i = 0; i < 10; i++){
+        for(int i = 0; i < book.getNrOfCopies(); i++){
             BookItem item = new BookItem(book.getTitle(), book.getSubject(), book.getLanguage(), book.getNumberOfPages(),
-                    book.getPublishingHouse(), book.getAuthors(), book.getCategory(), book.getPrice(), itemIds++, new Date(), BookStatus.AVAILABLE);
+                    book.getPublishingHouse(), book.getAuthors(), book.getCategory(), book.getPrice(), book.getNrOfCopies(), itemIds.getAndIncrement(), new Date(), BookStatus.AVAILABLE);
             bookItems.add(item);
         }
         System.out.println("The book " + book.getTitle() + " was added.\n");
@@ -314,7 +315,9 @@ public class MainService implements Search {
         }
         System.out.println("Write the price.");
         int bookPrice = Integer.parseInt(scanner.nextLine());
-        return new Book(bookTitle, bookSubject, bookLanguage, bookNumberOfPages, publishingHouse, bookAuthors, category, bookPrice);
+        System.out.println("Write the number of copies.");
+        int number = Integer.parseInt(scanner.nextLine());
+        return new Book(bookTitle, bookSubject, bookLanguage, bookNumberOfPages, publishingHouse, bookAuthors, category, bookPrice, number);
     }
 
     public Address readAddressData(Scanner scanner){

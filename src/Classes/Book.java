@@ -15,9 +15,10 @@ public class Book implements Comparable<Book> {
     private Category category;
     private List<Author> authors;
     private double price;
+    private int nrOfCopies;
 
     public Book(String title, String subject, String language, int numberOfPages, PublishingHouse publishingHouse,
-                List<Author> authors, Category category, double price) {
+                List<Author> authors, Category category, double price, int nrOfCopies) {
         this.title = title;
         this.subject = subject;
         this.language = language;
@@ -26,6 +27,7 @@ public class Book implements Comparable<Book> {
         this.authors = authors;
         this.category = category;
         this.price = price;
+        this.nrOfCopies = nrOfCopies;
     }
 
     public Book(){
@@ -37,6 +39,15 @@ public class Book implements Comparable<Book> {
         this.authors = new ArrayList<Author>();
         this.category = new Category();
         this.price = 0.0;
+        this.nrOfCopies = 0;
+    }
+
+    public int getNrOfCopies() {
+        return nrOfCopies;
+    }
+
+    public void setNrOfCopies(int nrOfCopies) {
+        this.nrOfCopies = nrOfCopies;
     }
 
     public double getPrice() {
