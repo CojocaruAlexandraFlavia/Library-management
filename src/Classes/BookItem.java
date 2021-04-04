@@ -6,22 +6,31 @@ import java.util.Date;
 import java.util.List;
 
 public class BookItem extends Book{
+    private int itemId;
     private Date dateOfPurchase;
-    private double price;
     private BookStatus bookStatus;
 
-    public BookItem(String title, String subject, String language, int numberOfPages, PublishingHouse publishingHouse, List<Author> authors, Category category,Date dateOfPurchase, double price, BookStatus bookStatus) {
-        super(title, subject, language, numberOfPages, publishingHouse, authors, category);
+    public BookItem(String title, String subject, String language, int numberOfPages, PublishingHouse publishingHouse,
+                    List<Author> authors, Category category, double price, int itemId, Date dateOfPurchase,  BookStatus bookStatus) {
+        super(title, subject, language, numberOfPages, publishingHouse, authors, category, price);
+        this.itemId = itemId;
         this.dateOfPurchase = dateOfPurchase;
-        this.price = price;
         this.bookStatus = bookStatus;
     }
 
     public BookItem(){
         super();
+        this.itemId = -1;
         this.dateOfPurchase = new Date();
-        this.price = 0.0;
         this.bookStatus = BookStatus.AVAILABLE;
+    }
+
+    public int getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(int itemId) {
+        this.itemId = itemId;
     }
 
     public Date getDateOfPurchase() {
@@ -30,14 +39,6 @@ public class BookItem extends Book{
 
     public void setDateOfPurchase(Date dateOfPurchase) {
         this.dateOfPurchase = dateOfPurchase;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
     }
 
     public BookStatus getBookStatus() {
@@ -52,8 +53,8 @@ public class BookItem extends Book{
     @Override
     public String toString() {
         return "BookItem{" +
-                "dateOfPurchase=" + dateOfPurchase +
-                ", price=" + price +
+                "itemId=" + itemId +
+                ", dateOfPurchase=" + dateOfPurchase +
                 ", bookStatus=" + bookStatus +
                 '}';
     }

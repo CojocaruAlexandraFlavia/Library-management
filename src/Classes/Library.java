@@ -3,7 +3,7 @@ package Classes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Library {
+public class Library implements Comparable<Library> {
     private String name;
     private Address address;
     private List<Librarian> librarians;
@@ -61,5 +61,10 @@ public class Library {
 
     public void setBooks(List<Book> books) {
         this.books = books;
+    }
+
+    @Override
+    public int compareTo(Library o) {
+        return this.name.compareTo(o.getName());
     }
 }

@@ -6,7 +6,6 @@ import java.util.Date;
 public class Member extends Person {
     private int id;
     private Date membershipDate;
-    //private int totalBooksCheckouts;
     private MemberStatus status;
 
     public Member(String firstName, String lastName, String phoneNumber, int id, Date membershipDate, MemberStatus status) {
@@ -30,17 +29,6 @@ public class Member extends Person {
     public void setMembershipDate(Date membershipDate) {
         this.membershipDate = membershipDate;
     }
-
-    /*
-    public int getTotalBooksCheckouts() {
-        return totalBooksCheckouts;
-    }
-
-    public void setTotalBooksCheckouts(int totalBooksCheckouts) {
-        this.totalBooksCheckouts = totalBooksCheckouts;
-    }
-    * */
-
 
     public MemberStatus getStatus() {
         return status;

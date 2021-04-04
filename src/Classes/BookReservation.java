@@ -8,13 +8,20 @@ public class BookReservation {
     private int reservationId;
     private int memberId;
     private ReservationStatus status;
-    private List<BookItem> bookItems;
+    private BookItem bookItem;
 
-    public BookReservation(int reservationId, int memberId, List<BookItem> bookItems, ReservationStatus status) {
+    public BookReservation(int reservationId, int memberId, BookItem bookItem, ReservationStatus status) {
         this.reservationId = reservationId;
         this.memberId = memberId;
-        this.bookItems = bookItems;
+        this.bookItem = bookItem;
         this.status = status;
+    }
+
+    public BookReservation(){
+        this.reservationId = -1;
+        this.memberId = -1;
+        this.bookItem = new BookItem();
+        this.status = ReservationStatus.WAITING;
     }
 
     public int getReservationId() {
@@ -25,12 +32,12 @@ public class BookReservation {
         this.reservationId = reservationId;
     }
 
-    public List<BookItem> getBookItems() {
-        return bookItems;
+    public BookItem getBookItem() {
+        return bookItem;
     }
 
-    public void setBookItems(List<BookItem> bookItems) {
-        this.bookItems = bookItems;
+    public void setBookItem(BookItem bookItem) {
+        this.bookItem = bookItem;
     }
 
     public ReservationStatus getStatus() {
@@ -46,7 +53,7 @@ public class BookReservation {
         return "BookReservation{" +
                 "reservationId=" + reservationId +
                 ", status=" + status +
-                ", bookItems=" + bookItems +
+                ", bookItems=" + bookItem +
                 '}';
     }
 

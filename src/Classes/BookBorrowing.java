@@ -2,15 +2,25 @@ package Classes;
 
 import java.util.Date;
 
-public class BookLending {
+public class BookBorrowing {
     private int memberId;
     private Date dueDate;
     private Date returnDate;
+    private int itemId;
 
-    public BookLending(int memberId, Date dueDate, Date returnDate) {
+    public BookBorrowing(int memberId, Date dueDate, Date returnDate, int itemId) {
         this.memberId = memberId;
         this.dueDate = dueDate;
         this.returnDate = returnDate;
+        this.itemId = itemId;
+    }
+
+    public int getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(int itemId) {
+        this.itemId = itemId;
     }
 
     public int getMemberId() {
