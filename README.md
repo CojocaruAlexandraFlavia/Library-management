@@ -11,7 +11,7 @@
 7) Adding a librarian;
 8) Create new library (with its address, librarians, books etc.);
 9) Create a book reservation (the selected book will be RESERVED);
-10) Create a book borrowing (with the the due date and the date when it was borrowed);
+10) Create a book borrowing (with the due date and the date when it was borrowed);
 11) Buy a book; 
 12) Search books by title, author, category;
 13) Search a category by its name;
