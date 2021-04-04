@@ -5,13 +5,13 @@ import java.util.Date;
 public class BookBorrowing {
     private int memberId;
     private Date dueDate;
-    private Date returnDate;
+    private Date borrowingDay;
     private int itemId;
 
-    public BookBorrowing(int memberId, Date dueDate, Date returnDate, int itemId) {
+    public BookBorrowing(int memberId, Date dueDate, Date borrowingDay, int itemId) {
         this.memberId = memberId;
         this.dueDate = dueDate;
-        this.returnDate = returnDate;
+        this.borrowingDay = borrowingDay;
         this.itemId = itemId;
     }
 
@@ -39,11 +39,11 @@ public class BookBorrowing {
         this.dueDate = dueDate;
     }
 
-    public Date getReturnDate() {
-        return returnDate;
+    public Date getBorrowingDay() {
+        return borrowingDay;
     }
 
-    public void setReturnDate(Date returnDate) {
-        this.returnDate = returnDate;
+    public void setBorrowingDay(Date borrowingDay) {
+        this.borrowingDay = borrowingDay;
     }
 }
