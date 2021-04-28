@@ -5,10 +5,33 @@ import Enums.BookStatus;
 import Enums.MemberStatus;
 import Interfaces.Search;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MainService implements Search {
+
+    private MainService(){}
+
+    private  static class SINGLETON_HOLDER{
+        private static final MainService INSTANCE = new MainService();
+    }
+
+    public static MainService getInstance(){
+        return MainService.SINGLETON_HOLDER.INSTANCE;
+    }
+
+    String auditReportPath;
+    {
+        try {
+            auditReportPath = Files.readString(Paths.get("C:\\Users\\alexa\\Desktop\\FMI\\AN II\\PAO\\Project\\src\\Service\\AuditReportFileName.txt"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     TreeSet<Book> books = new TreeSet<>();
     Set<Author> authors = new HashSet<>();
     TreeSet<Library> libraries = new TreeSet<>();
@@ -21,9 +44,10 @@ public class MainService implements Search {
     Set<BookReservation> reservations = new HashSet<>();
     Set<BookBorrowing> borrowings = new HashSet<>();
     double totalSales = 0.0;
-    //int itemIds = 0;
     AtomicInteger memberIds = new AtomicInteger();
     AtomicInteger itemIds = new AtomicInteger();
+
+    AuditReportGeneratorService auditReportGeneratorService = AuditReportGeneratorService.getInstance();
 
     public void addAddress(Address address){
         addresses.add(address);
@@ -38,46 +62,55 @@ public class MainService implements Search {
             bookItems.add(item);
         }
         System.out.println("The book " + book.getTitle() + " was added.\n");
+        auditReportGeneratorService.addActionToReport(2, auditReportPath);
     }
 
     public void addAuthor(Author author){
         authors.add(author);
         System.out.println("The author " + author.getFirstName() + " " + author.getLastName() + " was added.\n");
+        auditReportGeneratorService.addActionToReport(8, auditReportPath);
     }
 
     public void addCategory(Category category){
         categories.add(category);
         System.out.println("The category " + category.getName() + " was added.\n");
+        auditReportGeneratorService.addActionToReport(4, auditReportPath);
     }
 
     public void addLibrary(Library library){
         libraries.add(library);
         System.out.println("The library " + library.getName() + " was added.\n");
+        auditReportGeneratorService.addActionToReport(3, auditReportPath);
     }
 
     public void addPublishingHouse(PublishingHouse publishingHouse){
         publishingHouses.add(publishingHouse);
         System.out.println("The publishing house " + publishingHouse.getName() + " was added.\n");
+        auditReportGeneratorService.addActionToReport(6, auditReportPath);
     }
 
     public void addMember(Member member){
         members.add(member);
         System.out.println("The member " + member.getFirstName() + " " + member.getLastName() + " with the member id " + member.getId() + " was added.\n");
+        auditReportGeneratorService.addActionToReport(5, auditReportPath);
     }
 
     public void addLibrarian(Librarian librarian){
         librarians.add(librarian);
         System.out.println("The librarian " + librarian.getFirstName() + " " + librarian.getLastName() + " was added.\n");
+        auditReportGeneratorService.addActionToReport(7, auditReportPath);
     }
 
     public void addBookReservation(BookReservation reservation){
         reservations.add(reservation);
         System.out.println("The reservation for member " + reservation.getMemberId() + " was added.\n" );
+        auditReportGeneratorService.addActionToReport(9, auditReportPath);
     }
 
     public void addBookBorrowing(BookBorrowing bookBorrowing){
         borrowings.add(bookBorrowing);
         System.out.println("The book item " + bookBorrowing.getItemId() + " was borrowed by " + bookBorrowing.getMemberId() + "\n" );
+        auditReportGeneratorService.addActionToReport(10, auditReportPath);
     }
 
     public Book searchBookByTitle(String title){
@@ -116,6 +149,7 @@ public class MainService implements Search {
         for(Book book : books){
             System.out.println(book.getTitle());
         }
+        auditReportGeneratorService.addActionToReport(12, auditReportPath);
     }
 
     public void closeMemberAccount(int id){
@@ -131,20 +165,24 @@ public class MainService implements Search {
         }
         else{
             System.out.println("Your account is closed.\n");
+            auditReportGeneratorService.addActionToReport(15, auditReportPath);
         }
     }
 
     public void showTotalSales(){
         System.out.println("Total sales: " + totalSales + "\n");
+        auditReportGeneratorService.addActionToReport(14, auditReportPath);
     }
 
     public boolean verifyMember(int id){
+        auditReportGeneratorService.addActionToReport(1, auditReportPath);
         for(Member member : members){
             if(member.getId() == id){
                 return true;
             }
         }
         return false;
+
     }
 
     public PublishingHouse publishingHouseSearch(String name){
@@ -206,6 +244,7 @@ public class MainService implements Search {
     }
 
     public void showAvailableTitles(){
+        auditReportGeneratorService.addActionToReport(13, auditReportPath);
         for(BookItem item : bookItems){
             if(item.getBookStatus().equals(BookStatus.AVAILABLE)){
                 System.out.println(item.getTitle());

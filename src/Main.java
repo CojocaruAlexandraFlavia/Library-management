@@ -2,7 +2,11 @@ import Classes.*;
 import Enums.BookStatus;
 import Enums.ReservationStatus;
 import Service.MainService;
+import Service.AuditReportGeneratorService;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -28,7 +32,16 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        MainService mainService = new MainService();
+        AuditReportGeneratorService auditReportGeneratorService = AuditReportGeneratorService.getInstance();
+        String reportPath = auditReportGeneratorService.generateAuditReport();
+        try {
+            Files.write(Paths.get("C:\\Users\\alexa\\Desktop\\FMI\\AN II\\PAO\\Project\\src\\Service\\AuditReportFileName.txt"), reportPath.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        MainService mainService = MainService.getInstance();
+
         Scanner scanner = new Scanner (System.in);
         AtomicInteger reservationIds = new AtomicInteger();
         while(true){
@@ -93,12 +106,10 @@ public class Main {
                     mainService.addPublishingHouse(publishingHouse1);
                 }
                 case 7 -> {
-
                     Librarian librarian = (Librarian) mainService.readPersonData(scanner, 2);
                     mainService.addLibrarian(librarian);
                 }
                 case 8 -> {
-
                     Author author = (Author)mainService.readPersonData(scanner,3);
                     mainService.addAuthor(author);
                 }
