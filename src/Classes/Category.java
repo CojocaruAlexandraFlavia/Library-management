@@ -8,12 +8,10 @@ public class Category {
 
     public Category(String name) {
         this.name = name;
-        //this.books = books;
     }
 
     public Category(){
         this.name = "";
-        //this.books = new ArrayList<Book>();
     }
 
     public String getName() {
@@ -24,11 +22,10 @@ public class Category {
         this.name = name;
     }
 
-    //public List<Book> getBooks() {
-    //    return books;
-    //}
-
-    //public void setBooks(List<Book> books) {
-    //    this.books = books;
-    //}
+    @Override
+    public String toString() {
+        return "Category{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }

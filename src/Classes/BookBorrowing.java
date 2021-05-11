@@ -46,4 +46,14 @@ public class BookBorrowing {
     public void setBorrowingDay(Date borrowingDay) {
         this.borrowingDay = borrowingDay;
     }
+
+    @Override
+    public String toString() {
+        return "BookBorrowing{" +
+                "memberId=" + memberId +
+                ", dueDate=" + dueDate +
+                ", borrowingDay=" + borrowingDay +
+                ", itemId=" + itemId +
+                '}';
+    }
 }

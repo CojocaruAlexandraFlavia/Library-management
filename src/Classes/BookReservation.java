@@ -53,7 +53,7 @@ public class BookReservation {
         return "BookReservation{" +
                 "reservationId=" + reservationId +
                 ", status=" + status +
-                ", bookItems=" + bookItem +
+                ", bookItem=" + bookItem +
                 '}';
     }
 

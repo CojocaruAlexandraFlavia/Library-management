@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class AuditReportGeneratorService {
 
-    private static final String reportPath = "C:\\Users\\alexa\\Desktop\\FMI\\AN II\\PAO\\Project\\src\\Reports\\";
+    private static final String REPORT_PATH = "C:\\Users\\alexa\\Desktop\\FMI\\AN II\\PAO\\Project\\src\\Reports\\";
 
     private AuditReportGeneratorService(){}
 
@@ -25,10 +25,10 @@ public class AuditReportGeneratorService {
         StringBuilder reportContent = new StringBuilder();
         reportContent.append("ACTION_NAME");
         reportContent.append(", ");
-        reportContent.append("DATE");
+        reportContent.append("TIMESTAMP");
         reportContent.append("\n");
         String fileExtension = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-        String filePath = reportPath + "Audit" + fileExtension + ".csv";
+        String filePath = REPORT_PATH + "Audit" + fileExtension + ".csv";
         try {
             Files.createFile(Paths.get(filePath));
             Files.write(Paths.get(filePath), reportContent.toString().getBytes());
@@ -47,15 +47,16 @@ public class AuditReportGeneratorService {
             case 4 -> "A new book category has been added.";
             case 5 -> "A new member has been added.";
             case 6 -> "A new publishing house has been added.";
-            case 7 -> "A new librarian has been added.";
+            case 7 -> "The number of exemplars from a specific title has been shown.";
             case 8 -> "A new author has been added.";
             case 9 -> "A book has been reserved.";
             case 10 -> "A book has been borrowed.";
             case 11 -> "A book has been bought.";
             case 12 -> "All the book titles have been shown";
             case 13 -> "All the available titles have been shown.";
-            case 14 -> "The total sales value has been shown.";
-            case 15 -> "A member account has been closed.";
+            case 14 -> "All the titles from a specific category have been shown.";
+            case 15 -> "The total sales value has been shown.";
+            case 16 -> "A member account has been closed.";
             default -> "";
         };
         reportContent.append(content);

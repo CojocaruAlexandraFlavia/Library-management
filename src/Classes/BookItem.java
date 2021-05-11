@@ -21,7 +21,7 @@ public class BookItem extends Book{
     public BookItem(){
         super();
         this.itemId = -1;
-        this.dateOfPurchase = new Date();
+        this.dateOfPurchase = null;//new Date();
         this.bookStatus = BookStatus.AVAILABLE;
     }
 

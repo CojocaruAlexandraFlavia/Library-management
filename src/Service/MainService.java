@@ -32,25 +32,28 @@ public class MainService implements Search {
         }
     }
 
-    TreeSet<Book> books = new TreeSet<>();
-    Set<Author> authors = new HashSet<>();
-    TreeSet<Library> libraries = new TreeSet<>();
-    Set<Member> members = new HashSet<>();
-    Set<Librarian> librarians = new HashSet<>();
-    Set<PublishingHouse> publishingHouses = new HashSet<>();
-    Set<Category> categories = new HashSet<>();
-    Set<Address> addresses = new HashSet<>();
-    Set<BookItem> bookItems = new HashSet<>();
-    Set<BookReservation> reservations = new HashSet<>();
-    Set<BookBorrowing> borrowings = new HashSet<>();
+    private final TreeSet<Book> books = new TreeSet<>(FileReaderService.getInstance().getBooks().values());
+    private final Set<Author> authors = new HashSet<>(FileReaderService.getInstance().getAuthors().values());
+    private final TreeSet<Library> libraries = new TreeSet<>();
+    private final Set<Member> members = new HashSet<>(FileReaderService.getInstance().getMembers().values());
+    private final Set<Librarian> librarians = new HashSet<>(FileReaderService.getInstance().getLibrarians().values());
+    private final Set<PublishingHouse> publishingHouses = new HashSet<>(FileReaderService.getInstance().getPublishingHouses().values());
+    private final Set<Category> categories = new HashSet<>(FileReaderService.getInstance().getCategories().values());
+    private final Set<Address> addresses = new HashSet<>(FileReaderService.getInstance().getAddresses().values());
+    private final Set<BookItem> bookItems = new HashSet<>();
+    private final Set<BookReservation> reservations = new HashSet<>();
+    private final Set<BookBorrowing> borrowings = new HashSet<>();
     double totalSales = 0.0;
     AtomicInteger memberIds = new AtomicInteger();
     AtomicInteger itemIds = new AtomicInteger();
 
     AuditReportGeneratorService auditReportGeneratorService = AuditReportGeneratorService.getInstance();
 
+    FileWriterService fileWriterService = FileWriterService.getInstance();
+
     public void addAddress(Address address){
         addresses.add(address);
+        fileWriterService.writeAddressToFile(address);
         System.out.println("The address " + address.getStreet() + ", " + address.getCity() + ", " + address.getCountry() + ", " + address.getZipCode() + " was added.\n");
     }
 
@@ -67,12 +70,14 @@ public class MainService implements Search {
 
     public void addAuthor(Author author){
         authors.add(author);
+        fileWriterService.writePersonToFile(author,1,null,null,null);
         System.out.println("The author " + author.getFirstName() + " " + author.getLastName() + " was added.\n");
         auditReportGeneratorService.addActionToReport(8, auditReportPath);
     }
 
     public void addCategory(Category category){
         categories.add(category);
+        fileWriterService.writeCategoryToFile(category);
         System.out.println("The category " + category.getName() + " was added.\n");
         auditReportGeneratorService.addActionToReport(4, auditReportPath);
     }
@@ -91,14 +96,15 @@ public class MainService implements Search {
 
     public void addMember(Member member){
         members.add(member);
+        fileWriterService.writePersonToFile(member,3,member.getMembershipDate(),null,member.getStatus().toString());
         System.out.println("The member " + member.getFirstName() + " " + member.getLastName() + " with the member id " + member.getId() + " was added.\n");
         auditReportGeneratorService.addActionToReport(5, auditReportPath);
     }
 
     public void addLibrarian(Librarian librarian){
         librarians.add(librarian);
+        fileWriterService.writePersonToFile(librarian,2,null,librarian.getHiringDate(),null);
         System.out.println("The librarian " + librarian.getFirstName() + " " + librarian.getLastName() + " was added.\n");
-        auditReportGeneratorService.addActionToReport(7, auditReportPath);
     }
 
     public void addBookReservation(BookReservation reservation){
@@ -113,35 +119,27 @@ public class MainService implements Search {
         auditReportGeneratorService.addActionToReport(10, auditReportPath);
     }
 
-    public Book searchBookByTitle(String title){
-        for(Book book : books){
+    public int searchBookByTitle(String title){
+        int nrOfCopies = 0;
+        for(Book book : bookItems){
             if(book.getTitle().equalsIgnoreCase(title)){
-                return book;
+                nrOfCopies ++;
             }
         }
-
-        return new Book();
+        auditReportGeneratorService.addActionToReport(7, auditReportPath);
+        return nrOfCopies;
     }
 
-    public Set<Book> searchBookByAuthor(String firstName, String lastName){
-        Set<Book> booksFound = new HashSet<>();
-        for(Book book : books) {
-            for(Author author : book.getAuthors()){
-                if(author.getFirstName().equalsIgnoreCase(firstName) && author.getLastName().equalsIgnoreCase(lastName)){
-                    booksFound.add(book);
-                }
-            }
-        }
-        return booksFound;
-    }
 
     public Set<Book> searchBookByCategory(String categoryName){
         Set<Book> booksFound = new HashSet<>(Collections.emptySet());
         for(Book book : books){
+            System.out.println(book.getCategory().getName());
             if(book.getCategory().getName().equalsIgnoreCase(categoryName)){
                 booksFound.add(book);
             }
         }
+        auditReportGeneratorService.addActionToReport(14, auditReportPath);
         return booksFound;
     }
 
@@ -165,13 +163,13 @@ public class MainService implements Search {
         }
         else{
             System.out.println("Your account is closed.\n");
-            auditReportGeneratorService.addActionToReport(15, auditReportPath);
+            auditReportGeneratorService.addActionToReport(16, auditReportPath);
         }
     }
 
     public void showTotalSales(){
         System.out.println("Total sales: " + totalSales + "\n");
-        auditReportGeneratorService.addActionToReport(14, auditReportPath);
+        auditReportGeneratorService.addActionToReport(15, auditReportPath);
     }
 
     public boolean verifyMember(int id){
@@ -287,7 +285,7 @@ public class MainService implements Search {
         String phoneNumber = scanner.nextLine();
         System.out.println("Write the hiring date like day-month-year");
         String[] hiringDate = scanner.nextLine().split("-");
-        return new Librarian(firstName, lastName, phoneNumber, new Date(Integer.parseInt(hiringDate[0]), Integer.parseInt(hiringDate[1]), Integer.parseInt(hiringDate[2])));
+        return new Librarian(firstName, lastName, phoneNumber, new Date(Integer.parseInt(hiringDate[2]), Integer.parseInt(hiringDate[1]), Integer.parseInt(hiringDate[0])));
     }
 
     public Book readBookData(Scanner scanner){

@@ -122,6 +122,20 @@ public class Book implements Comparable<Book> {
         this.category = category;
     }
 
+    @Override
+    public String toString() {
+        return "Book{" +
+                "title='" + title + '\'' +
+                ", subject='" + subject + '\'' +
+                ", language='" + language + '\'' +
+                ", numberOfPages=" + numberOfPages +
+                ", publishingHouse=" + publishingHouse +
+                ", category=" + category +
+                ", authors=" + authors +
+                ", price=" + price +
+                ", nrOfCopies=" + nrOfCopies +
+                '}';
+    }
 
     @Override
     public int compareTo(Book o) {

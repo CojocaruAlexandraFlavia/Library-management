@@ -1,12 +1,10 @@
 import Classes.*;
 import Enums.BookStatus;
 import Enums.ReservationStatus;
+import Service.FileReaderService;
+import Service.FileWriterService;
 import Service.MainService;
-import Service.AuditReportGeneratorService;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,28 +15,39 @@ public class Main {
         System.out.println("2. Add a book.");
         System.out.println("3. Add a library.");
         System.out.println("4. Add a category for books.");
-        System.out.println("5. Add a a new member.");
+        System.out.println("5. Add a new member.");
         System.out.println("6. Add a new publishing house.");
-        System.out.println("7. Add a new librarian.");
+        System.out.println("7. Show the number of exemplars from a specific title.");
         System.out.println("8. Add a new author.");
         System.out.println("9. Make a book reservation.");
         System.out.println("10. Borrow a book.");
         System.out.println("11. Buy a book.");
-        System.out.println("12. Show all the book titles.");
+        System.out.println("12. Show all the book ordered by their titles.");
         System.out.println("13. Show all the available titles.");
-        System.out.println("14. Show the total value of the purchased books.");
-        System.out.println("15. Close your member account.");
-        System.out.println("16. Stop the program");
+        System.out.println("14. Show all the titles from a specific category.");
+        System.out.println("15. Show the total value of the purchased books.");
+        System.out.println("16. Close your member account.");
+        System.out.println("17. Stop the program");
     }
 
     public static void main(String[] args) {
-        AuditReportGeneratorService auditReportGeneratorService = AuditReportGeneratorService.getInstance();
-        String reportPath = auditReportGeneratorService.generateAuditReport();
-        try {
-            Files.write(Paths.get("C:\\Users\\alexa\\Desktop\\FMI\\AN II\\PAO\\Project\\src\\Service\\AuditReportFileName.txt"), reportPath.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        AuditReportGeneratorService auditReportGeneratorService = AuditReportGeneratorService.getInstance();
+//        String reportPath = auditReportGeneratorService.generateAuditReport();
+//        try {
+//            Files.write(Paths.get("C:\\Users\\alexa\\Desktop\\FMI\\AN II\\PAO\\Project\\src\\Service\\AuditReportFileName.txt"), reportPath.getBytes());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        FileReaderService fileReaderService = FileReaderService.getInstance();
+        fileReaderService.readAllFiles();
+
+//        Map<Integer,Member> memberMap = fileReaderService.getMembers();
+//        for(Map.Entry<Integer, Member> entry : memberMap.entrySet()){
+//            System.out.println(entry.getKey());
+//            System.out.println(entry.getValue());
+//        }
+////
+        FileWriterService fileWriterService = FileWriterService.getInstance();
 
         MainService mainService = MainService.getInstance();
 
@@ -106,8 +115,15 @@ public class Main {
                     mainService.addPublishingHouse(publishingHouse1);
                 }
                 case 7 -> {
-                    Librarian librarian = (Librarian) mainService.readPersonData(scanner, 2);
-                    mainService.addLibrarian(librarian);
+                    System.out.println("Write the book title.");
+                    String title = scanner.nextLine();
+                    int nrOfExemplars = mainService.searchBookByTitle(title);
+                    if(nrOfExemplars == 0){
+                        System.out.println("Title not available.");
+                    }
+                    else{
+                        System.out.println(nrOfExemplars + " exemplars");
+                    }
                 }
                 case 8 -> {
                     Author author = (Author)mainService.readPersonData(scanner,3);
@@ -169,12 +185,26 @@ public class Main {
                         mainService.addSale(item.getPrice());
                         reservation.setStatus(ReservationStatus.COMPLETED);
                         System.out.println("You bought the book " + item.getTitle());
+                        //auditReportGeneratorService.addActionToReport(11, reportPath);
                     }
                 }
                 case 12 -> mainService.showBookTitles();
                 case 13 -> mainService.showAvailableTitles();
-                case 14 -> mainService.showTotalSales();
-                case 15 -> {
+                case 14 -> {
+                    System.out.println("Write the category name");
+                    String categoryName = scanner.nextLine();
+                    Set<Book> foundBooks = mainService.searchBookByCategory(categoryName);
+                    if (foundBooks.size() == 0){
+                        System.out.println("There is not any book from this category.");
+                    }
+                    else {
+                        for (Book book: foundBooks) {
+                            System.out.println(book.getTitle());
+                        }
+                    }
+                }
+                case 15 -> mainService.showTotalSales();
+                case 16 -> {
                     System.out.println("Write your member id.");
                     int memberId = Integer.parseInt(scanner.nextLine());
                     if (mainService.verifyMember(memberId)) {
@@ -183,7 +213,7 @@ public class Main {
                         System.out.println("Wrong member id. Try to write it correctly next time.");
                     }
                 }
-                case 16 -> {
+                case 17 -> {
                     System.out.println("Stopping system..");
                     System.exit(0);
                 }
