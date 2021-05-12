@@ -4,10 +4,21 @@ import Classes.*;
 import Enums.BookStatus;
 import Enums.MemberStatus;
 import Interfaces.Search;
+import Service.FilesReaderWriter.AuditReportGeneratorService;
+import Service.FilesReaderWriter.FileReaderService;
+import Service.FilesReaderWriter.FileWriterService;
+import Service.FilesReaderWriter.FilesObjects;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -32,17 +43,17 @@ public class MainService implements Search {
         }
     }
 
-    private final TreeSet<Book> books = new TreeSet<>(FileReaderService.getInstance().getBooks().values());
-    private final Set<Author> authors = new HashSet<>(FileReaderService.getInstance().getAuthors().values());
-    private final TreeSet<Library> libraries = new TreeSet<>();
-    private final Set<Member> members = new HashSet<>(FileReaderService.getInstance().getMembers().values());
-    private final Set<Librarian> librarians = new HashSet<>(FileReaderService.getInstance().getLibrarians().values());
-    private final Set<PublishingHouse> publishingHouses = new HashSet<>(FileReaderService.getInstance().getPublishingHouses().values());
-    private final Set<Category> categories = new HashSet<>(FileReaderService.getInstance().getCategories().values());
-    private final Set<Address> addresses = new HashSet<>(FileReaderService.getInstance().getAddresses().values());
-    private final Set<BookItem> bookItems = new HashSet<>();
-    private final Set<BookReservation> reservations = new HashSet<>();
-    private final Set<BookBorrowing> borrowings = new HashSet<>();
+    private final TreeSet<Book> books = new TreeSet<>(FilesObjects.books.values());
+    private final Set<Author> authors = new HashSet<>(FilesObjects.authors.values());
+    private final TreeSet<Library> libraries = new TreeSet<>(FilesObjects.libraries.values());
+    private final Set<Member> members = new HashSet<>(FilesObjects.members.values());
+    private final Set<Librarian> librarians = new HashSet<>(FilesObjects.librarians.values());
+    private final Set<PublishingHouse> publishingHouses = new HashSet<>(FilesObjects.publishingHouses.values());
+    private final Set<Category> categories = new HashSet<>(FilesObjects.categories.values());
+    private final Set<Address> addresses = new HashSet<>(FilesObjects.addresses.values());
+    private final Set<BookItem> bookItems = new HashSet<>(FilesObjects.bookItems.values());
+    private final Set<BookReservation> reservations = new HashSet<>(FilesObjects.reservations.values());
+    private final Set<BookBorrowing> borrowings = new HashSet<>(FilesObjects.borrowings.values());
     double totalSales = 0.0;
     AtomicInteger memberIds = new AtomicInteger();
     AtomicInteger itemIds = new AtomicInteger();
@@ -50,6 +61,7 @@ public class MainService implements Search {
     AuditReportGeneratorService auditReportGeneratorService = AuditReportGeneratorService.getInstance();
 
     FileWriterService fileWriterService = FileWriterService.getInstance();
+    FileReaderService fileReaderService = FileReaderService.getInstance();
 
     public void addAddress(Address address){
         addresses.add(address);
@@ -63,6 +75,7 @@ public class MainService implements Search {
             BookItem item = new BookItem(book.getTitle(), book.getSubject(), book.getLanguage(), book.getNumberOfPages(),
                     book.getPublishingHouse(), book.getAuthors(), book.getCategory(), book.getPrice(), book.getNrOfCopies(), itemIds.getAndIncrement(), new Date(), BookStatus.AVAILABLE);
             bookItems.add(item);
+
         }
         System.out.println("The book " + book.getTitle() + " was added.\n");
         auditReportGeneratorService.addActionToReport(2, auditReportPath);
@@ -90,6 +103,7 @@ public class MainService implements Search {
 
     public void addPublishingHouse(PublishingHouse publishingHouse){
         publishingHouses.add(publishingHouse);
+        fileWriterService.writePublishingHouseToFile(publishingHouse);
         System.out.println("The publishing house " + publishingHouse.getName() + " was added.\n");
         auditReportGeneratorService.addActionToReport(6, auditReportPath);
     }
@@ -109,12 +123,14 @@ public class MainService implements Search {
 
     public void addBookReservation(BookReservation reservation){
         reservations.add(reservation);
+        fileWriterService.writeReservationToFile(reservation);
         System.out.println("The reservation for member " + reservation.getMemberId() + " was added.\n" );
         auditReportGeneratorService.addActionToReport(9, auditReportPath);
     }
 
     public void addBookBorrowing(BookBorrowing bookBorrowing){
         borrowings.add(bookBorrowing);
+        fileWriterService.writeBorrowingToFile(bookBorrowing);
         System.out.println("The book item " + bookBorrowing.getItemId() + " was borrowed by " + bookBorrowing.getMemberId() + "\n" );
         auditReportGeneratorService.addActionToReport(10, auditReportPath);
     }
@@ -134,7 +150,6 @@ public class MainService implements Search {
     public Set<Book> searchBookByCategory(String categoryName){
         Set<Book> booksFound = new HashSet<>(Collections.emptySet());
         for(Book book : books){
-            System.out.println(book.getCategory().getName());
             if(book.getCategory().getName().equalsIgnoreCase(categoryName)){
                 booksFound.add(book);
             }
@@ -157,6 +172,7 @@ public class MainService implements Search {
                 member.setStatus(MemberStatus.CLOSED);
                 memberFound = true;
             }
+            FileWriterService.closeMemberAccount(member);
         }
         if(!memberFound){
             System.out.println("Write the correct member id and try again.\n");
@@ -377,12 +393,23 @@ public class MainService implements Search {
         System.out.println("Write the phone number.");
         String phoneNumber = scanner.nextLine();
         if(option == 1){
-            return new Member(firstName, lastName, phoneNumber, memberIds.getAndIncrement(), new Date(), MemberStatus.ACTIVE);
+            Date date = null;
+            try {
+                date = new SimpleDateFormat("dd-MM-yyyy").parse(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            return new Member(firstName, lastName, phoneNumber, fileWriterService.getMemberId(), date, MemberStatus.ACTIVE);
         }
         else if(option == 2){
-            System.out.println("Write the hiring date like day-month-year");
-            String[] hiringDate = scanner.nextLine().split("-");
-            return new Librarian(firstName, lastName, phoneNumber, new Date(Integer.parseInt(hiringDate[0]), Integer.parseInt(hiringDate[1]), Integer.parseInt(hiringDate[2])));
+            System.out.println("Write the hiring date like dd-MM-yyyy");
+            Date hiringDate = null;
+            try {
+                hiringDate = new SimpleDateFormat("dd-MM-yyyy").parse(scanner.nextLine());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            return new Librarian(firstName, lastName, phoneNumber, hiringDate);
         }
         else{
             return new Author(firstName, lastName, phoneNumber);

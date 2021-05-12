@@ -1,12 +1,15 @@
 import Classes.*;
 import Enums.BookStatus;
 import Enums.ReservationStatus;
-import Service.FileReaderService;
-import Service.FileWriterService;
+import Service.FilesReaderWriter.AuditReportGeneratorService;
+import Service.FilesReaderWriter.FileReaderService;
+import Service.FilesReaderWriter.FileWriterService;
 import Service.MainService;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
     public static void showMenu(){
@@ -31,28 +34,20 @@ public class Main {
     }
 
     public static void main(String[] args) {
-//        AuditReportGeneratorService auditReportGeneratorService = AuditReportGeneratorService.getInstance();
-//        String reportPath = auditReportGeneratorService.generateAuditReport();
-//        try {
-//            Files.write(Paths.get("C:\\Users\\alexa\\Desktop\\FMI\\AN II\\PAO\\Project\\src\\Service\\AuditReportFileName.txt"), reportPath.getBytes());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        AuditReportGeneratorService auditReportGeneratorService = AuditReportGeneratorService.getInstance();
+        String reportPath = auditReportGeneratorService.generateAuditReport();
+        try {
+            Files.write(Paths.get("C:\\Users\\alexa\\Desktop\\FMI\\AN II\\PAO\\Project\\src\\Service\\AuditReportFileName.txt"), reportPath.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         FileReaderService fileReaderService = FileReaderService.getInstance();
         fileReaderService.readAllFiles();
-
-//        Map<Integer,Member> memberMap = fileReaderService.getMembers();
-//        for(Map.Entry<Integer, Member> entry : memberMap.entrySet()){
-//            System.out.println(entry.getKey());
-//            System.out.println(entry.getValue());
-//        }
-////
         FileWriterService fileWriterService = FileWriterService.getInstance();
-
         MainService mainService = MainService.getInstance();
 
         Scanner scanner = new Scanner (System.in);
-        AtomicInteger reservationIds = new AtomicInteger();
+
         while(true){
             showMenu();
             int option = Integer.parseInt(scanner.nextLine());
@@ -141,7 +136,7 @@ public class Main {
                         } else if (bookItem.getBookStatus() != BookStatus.AVAILABLE) {
                             System.out.println("The book item is not available.");
                         } else {
-                            BookReservation reservation = new BookReservation(reservationIds.getAndIncrement(), memberID, bookItem, ReservationStatus.PENDING);
+                            BookReservation reservation = new BookReservation(fileWriterService.getReservationId(), memberID, bookItem, ReservationStatus.PENDING);
                             mainService.addBookReservation(reservation);
                             mainService.modifyBookItemStatus(bookItem.getItemId(), BookStatus.RESERVED);
                         }
@@ -184,8 +179,9 @@ public class Main {
                         mainService.modifyBookItemStatus(item.getItemId(), BookStatus.BOUGHT);
                         mainService.addSale(item.getPrice());
                         reservation.setStatus(ReservationStatus.COMPLETED);
+                        fileWriterService.buyABook(reservation);
                         System.out.println("You bought the book " + item.getTitle());
-                        //auditReportGeneratorService.addActionToReport(11, reportPath);
+                        auditReportGeneratorService.addActionToReport(11, reportPath);
                     }
                 }
                 case 12 -> mainService.showBookTitles();

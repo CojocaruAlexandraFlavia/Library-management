@@ -1,4 +1,4 @@
-package Service;
+package Service.FilesReaderWriter;
 
 import Classes.*;
 import Enums.BookStatus;
@@ -23,17 +23,6 @@ public class FileReaderService {
         return FileReaderService.SINGLETON_HOLDER.INSTANCE;
     }
 
-    private final Map<Integer, Address> addresses = new HashMap<>();
-    private final Map<Integer, Member> members = new HashMap<>();
-    private final Map<Integer, PublishingHouse> publishingHouses = new HashMap<>();
-    private final Map<Integer, Category> categories = new HashMap<>();
-    private final Map<Integer, Author> authors = new HashMap<>();
-    private final Map<Integer, Librarian> librarians = new HashMap<>();
-    private final Map<Integer, Book> books = new HashMap<>();
-    private final Map<Integer, BookItem> bookItems = new HashMap<>();
-    private final Map<Integer, Library> libraries = new HashMap<>();
-    private final Map<Integer, BookBorrowing> borrowings = new HashMap<>();
-    private final Map<Integer, BookReservation> reservations = new HashMap<>();
 
     public void readAllAddresses(){
         Scanner scanner = null;
@@ -48,7 +37,7 @@ public class FileReaderService {
             String line = scanner.nextLine();
             String[] values = line.split(",");
             Address address = new Address(values[1], values[2], values[3], values[4]);
-            addresses.put(Integer.parseInt(values[0]), address);
+            FilesObjects.addresses.put(Integer.parseInt(values[0]), address);
         }
     }
 
@@ -65,7 +54,7 @@ public class FileReaderService {
             String line = scanner.nextLine();
             String[] values = line.split(",");
             PublishingHouse publishingHouse = new PublishingHouse(values[1], values[2]);
-            publishingHouses.put(Integer.parseInt(values[0]), publishingHouse);
+            FilesObjects.publishingHouses.put(Integer.parseInt(values[0]), publishingHouse);
         }
     }
 
@@ -91,7 +80,7 @@ public class FileReaderService {
                 switch (fileName) {
                     case "Authors.csv" -> {
                         Author author = new Author(values[1], values[2], values[3]);
-                        authors.put(Integer.parseInt(values[0]), author);
+                        FilesObjects.authors.put(Integer.parseInt(values[0]), author);
                     }
                     case "Librarians.csv" -> {
                         Date hiringDate = null;
@@ -101,7 +90,7 @@ public class FileReaderService {
                             e.printStackTrace();
                         }
                         Librarian librarian = new Librarian(values[1], values[2], values[3], hiringDate);
-                        librarians.put(Integer.parseInt(values[0]), librarian);
+                        FilesObjects.librarians.put(Integer.parseInt(values[0]), librarian);
                     }
                     case "Members.csv" -> {
                         Date membershipDate = null;
@@ -111,7 +100,7 @@ public class FileReaderService {
                             e.printStackTrace();
                         }
                         Member member = new Member(values[1], values[2], values[3], Integer.parseInt(values[0]), membershipDate, Enum.valueOf(MemberStatus.class, values[5]));
-                        members.put(Integer.parseInt(values[0]), member);
+                        FilesObjects.members.put(Integer.parseInt(values[0]), member);
                     }
                 }
             }
@@ -132,19 +121,19 @@ public class FileReaderService {
             String line = scanner.nextLine();
             String[] values = line.split(",");
             Category category = new Category(values[1]);
-            categories.put(Integer.parseInt(values[0]), category);
+            FilesObjects.categories.put(Integer.parseInt(values[0]), category);
         }
     }
 
     public AbstractMap.SimpleEntry<Integer, Book> readBook(Scanner scanner){
         String line = scanner.nextLine();
         String[] values = line.split(",");
-        Category category = categories.get(Integer.parseInt(values[6]));
-        PublishingHouse publishingHouse = publishingHouses.get(Integer.parseInt(values[5]));
+        Category category = FilesObjects.categories.get(Integer.parseInt(values[6]));
+        PublishingHouse publishingHouse = FilesObjects.publishingHouses.get(Integer.parseInt(values[5]));
         List<Author> bookAuthors = new ArrayList<>();
         String[] authorsIds = values[7].split(" ");
         for(String id : authorsIds){
-            Author author = authors.get(Integer.parseInt(id));
+            Author author = FilesObjects.authors.get(Integer.parseInt(id));
             bookAuthors.add(author);
         }
         Book book = new Book(values[1], values[2], values[3], Integer.parseInt(values[4]), publishingHouse, bookAuthors,
@@ -163,7 +152,7 @@ public class FileReaderService {
         String header = scanner.nextLine();
         while (scanner.hasNextLine()){
             Map.Entry<Integer, Book> pair = readBook(scanner);
-            books.put(pair.getKey(), pair.getValue());
+            FilesObjects.books.put(pair.getKey(), pair.getValue());
         }
     }
 
@@ -179,7 +168,7 @@ public class FileReaderService {
         while(scanner.hasNextLine()){
             String line = scanner.nextLine();
             String[] values = line.split(",");
-            Book book = books.get(Integer.parseInt(values[1]));
+            Book book = FilesObjects.books.get(Integer.parseInt(values[1]));
             Date dateOfPurchase = null;
             if(!values[2].equals("null")){
                 try {
@@ -192,7 +181,7 @@ public class FileReaderService {
             BookItem item = new BookItem(book.getTitle(),book.getSubject(),book.getLanguage(),book.getNumberOfPages(),book.getPublishingHouse(),
                     book.getAuthors(),book.getCategory(), book.getPrice(), book.getNrOfCopies(), Integer.parseInt(values[0]),
                     dateOfPurchase, Enum.valueOf(BookStatus.class, values[3]));
-            bookItems.put(Integer.parseInt(values[0]), item);
+            FilesObjects.bookItems.put(Integer.parseInt(values[0]), item);
         }
     }
 
@@ -208,21 +197,21 @@ public class FileReaderService {
         while(scanner.hasNextLine()){
             String line = scanner.nextLine();
             String[] values = line.split(",");
-            Address address = addresses.get(Integer.parseInt(values[2]));
+            Address address = FilesObjects.addresses.get(Integer.parseInt(values[2]));
             List<Librarian> librariansHere = new ArrayList<>();
             String[] librariansIds = values[3].split(" ");
             for(String id : librariansIds){
-                Librarian librarian = librarians.get(Integer.parseInt(id));
+                Librarian librarian = FilesObjects.librarians.get(Integer.parseInt(id));
                 librariansHere.add(librarian);
             }
             List<Book> libraryBooks = new ArrayList<>();
             String[] booksIds = values[4].split(" ");
             for(String id : booksIds){
-                Book book = books.get(Integer.parseInt(id));
+                Book book = FilesObjects.books.get(Integer.parseInt(id));
                 libraryBooks.add(book);
             }
             Library library = new Library(values[1], address, librariansHere, libraryBooks);
-            libraries.put(Integer.parseInt(values[0]), library);
+            FilesObjects.libraries.put(Integer.parseInt(values[0]), library);
         }
     }
 
@@ -238,9 +227,9 @@ public class FileReaderService {
         while(scanner.hasNextLine()) {
             String line = scanner.nextLine();
             String[] values = line.split(",");
-            BookItem item = bookItems.get(Integer.parseInt(values[3]));
+            BookItem item = FilesObjects.bookItems.get(Integer.parseInt(values[3]));
             BookReservation reservation = new BookReservation(Integer.parseInt(values[0]), Integer.parseInt(values[1]), item, Enum.valueOf(ReservationStatus.class, values[2]));
-            reservations.put(Integer.parseInt(values[0]), reservation);
+            FilesObjects.reservations.put(Integer.parseInt(values[0]), reservation);
         }
     }
 
@@ -264,7 +253,7 @@ public class FileReaderService {
                 e.printStackTrace();
             }
             BookBorrowing borrowing = new BookBorrowing(Integer.parseInt(values[1]), dueDate, borrowingDate, Integer.parseInt(values[4]));
-            borrowings.put(Integer.parseInt(values[0]), borrowing);
+            FilesObjects.borrowings.put(Integer.parseInt(values[0]), borrowing);
         }
     }
 
@@ -283,47 +272,5 @@ public class FileReaderService {
         readAllLibraries();
     }
 
-    public Map<Integer, Address> getAddresses() {
-        return addresses;
-    }
 
-    public Map<Integer, Member> getMembers() {
-        return members;
-    }
-
-    public Map<Integer, PublishingHouse> getPublishingHouses() {
-        return publishingHouses;
-    }
-
-    public Map<Integer, Category> getCategories() {
-        return categories;
-    }
-
-    public Map<Integer, Author> getAuthors() {
-        return authors;
-    }
-
-    public Map<Integer, Librarian> getLibrarians() {
-        return librarians;
-    }
-
-    public Map<Integer, Book> getBooks() {
-        return books;
-    }
-
-    public Map<Integer, BookItem> getBookItems() {
-        return bookItems;
-    }
-
-    public Map<Integer, Library> getLibraries() {
-        return libraries;
-    }
-
-    public Map<Integer, BookBorrowing> getBorrowings() {
-        return borrowings;
-    }
-
-    public Map<Integer, BookReservation> getReservations() {
-        return reservations;
-    }
 }
