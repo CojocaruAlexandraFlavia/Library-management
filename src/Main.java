@@ -179,7 +179,7 @@ public class Main {
                         mainService.addSale(item.getPrice());
                         reservation.setStatus(ReservationStatus.COMPLETED);
                         System.out.println("You bought the book " + item.getTitle());
-                        //auditReportGeneratorService.addActionToReport(11, reportPath);
+                        auditReportGeneratorService.addActionToReport(11, reportPath);
                     }
                 }
                 case 12 -> mainService.showBookTitles();
