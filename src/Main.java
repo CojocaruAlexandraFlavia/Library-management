@@ -31,22 +31,16 @@ public class Main {
     }
 
     public static void main(String[] args) {
-//        AuditReportGeneratorService auditReportGeneratorService = AuditReportGeneratorService.getInstance();
-//        String reportPath = auditReportGeneratorService.generateAuditReport();
-//        try {
-//            Files.write(Paths.get("C:\\Users\\alexa\\Desktop\\FMI\\AN II\\PAO\\Project\\src\\Service\\AuditReportFileName.txt"), reportPath.getBytes());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+       AuditReportGeneratorService auditReportGeneratorService = AuditReportGeneratorService.getInstance();
+       String reportPath = auditReportGeneratorService.generateAuditReport();
+       try {
+           Files.write(Paths.get("C:\\Users\\alexa\\Desktop\\FMI\\AN II\\PAO\\Project\\src\\Service\\AuditReportFileName.txt"), reportPath.getBytes());
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
         FileReaderService fileReaderService = FileReaderService.getInstance();
         fileReaderService.readAllFiles();
 
-//        Map<Integer,Member> memberMap = fileReaderService.getMembers();
-//        for(Map.Entry<Integer, Member> entry : memberMap.entrySet()){
-//            System.out.println(entry.getKey());
-//            System.out.println(entry.getValue());
-//        }
-////
         FileWriterService fileWriterService = FileWriterService.getInstance();
 
         MainService mainService = MainService.getInstance();
