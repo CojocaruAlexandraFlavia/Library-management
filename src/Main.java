@@ -1,20 +1,20 @@
-import Classes.*;
-import Enums.BookStatus;
-import Enums.ReservationStatus;
-import Service.FilesReaderWriter.AuditReportGeneratorService;
-import Service.FilesReaderWriter.FileReaderService;
-import Service.FilesReaderWriter.FileWriterService;
-import Service.MainService;
+import enums.BookStatus;
+import enums.MemberStatus;
+import enums.ReservationStatus;
+import models.*;
+import service.MainService;
+import service.databaseActions.DbDeleteService;
+import service.databaseActions.DbInsertService;
+import service.databaseActions.DbSelectService;
+import service.databaseActions.DbUpdateService;
+import service.filesReaderWriter.AuditReportGeneratorService;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 public class Main {
     public static void showMenu(){
         System.out.println("Choose one option:");
-        System.out.println("1. Verify your member id.");
+        System.out.println("1. Verify your account state.");
         System.out.println("2. Add a book.");
         System.out.println("3. Add a library.");
         System.out.println("4. Add a category for books.");
@@ -30,22 +30,26 @@ public class Main {
         System.out.println("14. Show all the titles from a specific category.");
         System.out.println("15. Show the total value of the purchased books.");
         System.out.println("16. Close your member account.");
-        System.out.println("17. Stop the program");
+        System.out.println("17. Delete one librarian.");
+        System.out.println("18. Stop the program");
     }
 
     public static void main(String[] args) {
+
         AuditReportGeneratorService auditReportGeneratorService = AuditReportGeneratorService.getInstance();
         String reportPath = auditReportGeneratorService.generateAuditReport();
-        try {
-            Files.write(Paths.get("C:\\Users\\alexa\\Desktop\\FMI\\AN II\\PAO\\Project\\src\\Service\\AuditReportFileName.txt"), reportPath.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+       /**
         FileReaderService fileReaderService = FileReaderService.getInstance();
         fileReaderService.readAllFiles();
         FileWriterService fileWriterService = FileWriterService.getInstance();
-        MainService mainService = MainService.getInstance();
+        */
 
+        MainService mainService = MainService.getInstance();
+        DbSelectService dbSelectService = DbSelectService.getInstance();
+        DbDeleteService dbDeleteService = DbDeleteService.getInstance();
+        DbInsertService dbInsertService = DbInsertService.getInstance();
+        DbUpdateService dbUpdateService = DbUpdateService.getInstance();
         Scanner scanner = new Scanner (System.in);
 
         while(true){
@@ -55,16 +59,21 @@ public class Main {
                 case 1 -> {
                     System.out.println("Write your member id.");
                     int id = Integer.parseInt(scanner.nextLine());
-                    if (!mainService.verifyMember(id)) {
+                    Member member = dbSelectService.verifyMemberId(id);
+                    if (member.getId() == -1) {
                         System.out.println("You are not a member. You can create an account if you want by choosing number 5 next time.");
-                    } else {
-                        System.out.println("It's ok, you are a member.");
+                    } else if (member.getStatus().equals(MemberStatus.CLOSED)){
+                        System.out.println("Your account is closed");
+                    }else{
+                        System.out.println("Your account is active.");
                     }
+                    auditReportGeneratorService.addActionToReport(1, reportPath);
                 }
                 case 2 -> {
                     Book book = mainService.readBookData(scanner);
                     if(!book.getTitle().equals("")){
-                        mainService.addBook(book);
+                        dbInsertService.addBook(book, java.util.Optional.empty());
+                        auditReportGeneratorService.addActionToReport(2, reportPath);
                     }
                 }
                 case 3 -> {
@@ -76,7 +85,7 @@ public class Main {
                     for (int i = 0; i < librariansNumber; i++) {
                         Librarian librarian = mainService.readLibrarianData(scanner);
                         librarians.add(librarian);
-                        mainService.addLibrarian(librarian);
+                        //mainService.addLibrarian(librarian);
                     }
                     System.out.println("How many books the library will have at the beginning?");
                     int numberOfBooks = Integer.parseInt(scanner.nextLine());
@@ -84,22 +93,30 @@ public class Main {
                     for (int i = 0; i < numberOfBooks; i++) {
                         Book book = mainService.readBookData(scanner);
                         books.add(book);
-                        mainService.addBook(book);
                     }
                     Address address = mainService.readAddressData(scanner);
                     Library library = new Library(name, address, librarians, books);
-                    mainService.addAddress(address);
-                    mainService.addLibrary(library);
+                    dbInsertService.addNewLibrary(library);
+                    auditReportGeneratorService.addActionToReport(3, reportPath);
                 }
                 case 4 -> {
                     System.out.println("Write the category name");
                     String categoryName = scanner.nextLine();
                     Category category = new Category(categoryName);
-                    mainService.addCategory(category);
+                    //mainService.addCategory(category);
+                    int result = dbInsertService.addCategory(category);
+                    if(result == -1){
+                        System.out.println("Something went wrong");
+                    }
+                    else{
+                        System.out.println("Category added");
+                        auditReportGeneratorService.addActionToReport(4, reportPath);
+                    }
                 }
                 case 5 -> {
                     Member member = (Member)mainService.readPersonData(scanner, 1);
-                    mainService.addMember(member);
+                    dbInsertService.addNewMember(member);
+                    auditReportGeneratorService.addActionToReport(5, reportPath);
                 }
                 case 6 -> {
                     System.out.println("Write the name.");
@@ -107,50 +124,61 @@ public class Main {
                     System.out.println("Write the description.");
                     String description = scanner.nextLine();
                     PublishingHouse publishingHouse1 = new PublishingHouse(phName, description);
-                    mainService.addPublishingHouse(publishingHouse1);
+                    dbInsertService.addPublishingHouse(publishingHouse1);
+                    auditReportGeneratorService.addActionToReport(6, reportPath);
                 }
                 case 7 -> {
                     System.out.println("Write the book title.");
                     String title = scanner.nextLine();
-                    int nrOfExemplars = mainService.searchBookByTitle(title);
+                    int nrOfExemplars = dbSelectService.getNumberOfExemplarsForATitle(title);
                     if(nrOfExemplars == 0){
                         System.out.println("Title not available.");
                     }
                     else{
                         System.out.println(nrOfExemplars + " exemplars");
+                        auditReportGeneratorService.addActionToReport(7, reportPath);
                     }
                 }
                 case 8 -> {
                     Author author = (Author)mainService.readPersonData(scanner,3);
-                    mainService.addAuthor(author);
+                    int result = dbInsertService.addAuthor(author);
+                    if(result == -1){
+                        System.out.println("The author already exists");
+                    }
+                    else{
+                        System.out.println("Author added");
+                        auditReportGeneratorService.addActionToReport(8, reportPath);
+                    }
                 }
                 case 9 -> {
                     System.out.println("Write your member id.");
                     int memberID = Integer.parseInt(scanner.nextLine());
-                    if (mainService.verifyMember(memberID)) {
+                    Member member = dbSelectService.verifyMemberId(memberID);
+                    if (member.getId() > 0 && member.getStatus().equals(MemberStatus.ACTIVE)) {
                         System.out.println("Write the book item id that you want to reserve.");
                         int bookItemId = Integer.parseInt(scanner.nextLine());
-                        BookItem bookItem = mainService.searchBookItemById(bookItemId);
-                        if (bookItem.getItemId() == -1) {
+                        BookItem foundItem = dbSelectService.getItemById(bookItemId);
+                        if (foundItem.getItemId() == -1) {
                             System.out.println("The book item id is wrong. Try again.");
-                        } else if (bookItem.getBookStatus() != BookStatus.AVAILABLE) {
+                        } else if (foundItem.getBookStatus() != BookStatus.AVAILABLE) {
                             System.out.println("The book item is not available.");
                         } else {
-                            BookReservation reservation = new BookReservation(fileWriterService.getReservationId(), memberID, bookItem, ReservationStatus.PENDING);
-                            mainService.addBookReservation(reservation);
-                            mainService.modifyBookItemStatus(bookItem.getItemId(), BookStatus.RESERVED);
+                            BookReservation reservation = new BookReservation(-1, memberID, foundItem, ReservationStatus.WAITING);
+                            dbInsertService.addReservation(reservation);
+                            auditReportGeneratorService.addActionToReport(9, reportPath);
                         }
                     } else {
-                        System.out.println("You can't make a reservation without being a member.");
+                        System.out.println("You can't make a reservation without being a member or if your account is closed");
                     }
                 }
                 case 10 -> {
                     System.out.println("Write your member id.");
                     int ID = Integer.parseInt(scanner.nextLine());
-                    if (mainService.verifyMember(ID)) {
+                    Member member = dbSelectService.verifyMemberId(ID);
+                    if (member.getId() > 0 && member.getStatus().equals(MemberStatus.ACTIVE)) {
                         System.out.println("Write the book item id that you want to borrow.");
                         int bookItemId = Integer.parseInt(scanner.nextLine());
-                        BookItem bookItem = mainService.searchBookItemById(bookItemId);
+                        BookItem bookItem = dbSelectService.getItemById(bookItemId);
                         if (bookItem.getItemId() == -1) {
                             System.out.println("The book item id is wrong. Try again.");
                         } else if (bookItem.getBookStatus() != BookStatus.AVAILABLE) {
@@ -161,55 +189,81 @@ public class Main {
                             calendar.setTime(dueDate);
                             calendar.add(Calendar.DATE, 7);
                             BookBorrowing borrowing = new BookBorrowing(ID, calendar.getTime(), new Date(), bookItem.getItemId());
-                            mainService.addBookBorrowing(borrowing);
-                            mainService.modifyBookItemStatus(bookItem.getItemId(), BookStatus.BORROWED);
+                            dbInsertService.addBorrowing(borrowing);
+                            auditReportGeneratorService.addActionToReport(10, reportPath);
                         }
                     } else {
-                        System.out.println("You can't borrow a book if you are not a member.");
+                        System.out.println("You can't borrow a book if you are not a member or if your account is closed.");
                     }
                 }
                 case 11 -> {
                     System.out.println("You can't buy a book without a reservation. Write your reservation id.");
                     int reservationId = Integer.parseInt(scanner.nextLine());
-                    BookReservation reservation = mainService.searchReservationById(reservationId);
+                    BookReservation reservation = dbSelectService.searchReservationById(reservationId);
                     if (reservation.getReservationId() == -1) {
                         System.out.println("Sorry, it seems that you don't have a reservation.");
                     } else {
                         BookItem item = reservation.getBookItem();
-                        mainService.modifyBookItemStatus(item.getItemId(), BookStatus.BOUGHT);
-                        mainService.addSale(item.getPrice());
-                        reservation.setStatus(ReservationStatus.COMPLETED);
-                        fileWriterService.buyABook(reservation);
+                        dbUpdateService.buyAReservedItem(reservation);
                         System.out.println("You bought the book " + item.getTitle());
                         auditReportGeneratorService.addActionToReport(11, reportPath);
                     }
                 }
-                case 12 -> mainService.showBookTitles();
-                case 13 -> mainService.showAvailableTitles();
+                case 12 -> {
+                    List<Book> books = dbSelectService.retrieveAllBooksSortedByTitle();
+                    for(Book book: books){
+                        System.out.println(book);
+                    }
+                    auditReportGeneratorService.addActionToReport(12, reportPath);
+                }
+                case 13 -> {
+                    Set<String> availableBooks = dbSelectService.getAvailableTitles();
+                    for(String title : availableBooks){
+                        System.out.println(title);
+                    }
+                    auditReportGeneratorService.addActionToReport(13, reportPath);
+                }
                 case 14 -> {
                     System.out.println("Write the category name");
                     String categoryName = scanner.nextLine();
-                    Set<Book> foundBooks = mainService.searchBookByCategory(categoryName);
+                    List<String> foundBooks = dbSelectService.getTitlesForCategory(categoryName);
                     if (foundBooks.size() == 0){
                         System.out.println("There is not any book from this category.");
                     }
                     else {
-                        for (Book book: foundBooks) {
-                            System.out.println(book.getTitle());
+                        for (String title: foundBooks) {
+                            System.out.println(title);
                         }
+                        auditReportGeneratorService.addActionToReport(14, reportPath);
                     }
                 }
-                case 15 -> mainService.showTotalSales();
+                case 15 -> {
+                    System.out.println(dbSelectService.valueOfPurchasedBooks());
+                    auditReportGeneratorService.addActionToReport(15, reportPath);
+                }
                 case 16 -> {
                     System.out.println("Write your member id.");
                     int memberId = Integer.parseInt(scanner.nextLine());
-                    if (mainService.verifyMember(memberId)) {
-                        mainService.closeMemberAccount(memberId);
+                    if (!dbSelectService.verifyMemberId(memberId).getFirstName().equals("")) {
+                        dbUpdateService.closeMemberAccount(memberId);
+                        auditReportGeneratorService.addActionToReport(17, reportPath);
                     } else {
                         System.out.println("Wrong member id. Try to write it correctly next time.");
                     }
                 }
                 case 17 -> {
+                    System.out.println("Write the librarian's id that you want to remove from the database");
+                    int id = Integer.parseInt(scanner.nextLine());
+                    Librarian librarian = dbSelectService.getLibrarianById(id);
+                    if(librarian.getFirstName().equals("") && librarian.getLastName().equals("")){
+                        System.out.println("The id is wrong. Try again.");
+                    }
+                    else{
+                        dbDeleteService.deleteLibrarian(id);
+                        auditReportGeneratorService.addActionToReport(17, reportPath);
+                    }
+                }
+                case 18 -> {
                     System.out.println("Stopping system..");
                     System.exit(0);
                 }
